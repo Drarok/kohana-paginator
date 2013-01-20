@@ -149,7 +149,13 @@ abstract class Kohana_Paginator
 	 */
 	public function getPageURL($page)
 	{
-		return $this->_url . '?page=' . (int) $page;
+		if ($page == 1) {
+			// No need for the parameter for page 1.
+			return $this->_url;
+		} else {
+			// Add on the page parameter.
+			return $this->_url . '?page=' . (int) $page;
+		}
 	}
 
 	/**
