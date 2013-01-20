@@ -165,6 +165,9 @@ abstract class Kohana_Paginator
 	 */
 	public function render()
 	{
+		if ($this->getPageCount() == 1) {
+			return NULL;
+		}
 		$view = View::factory($this->getView());
 		$view->paginator = $this;
 		return $view->render();
