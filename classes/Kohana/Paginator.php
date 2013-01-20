@@ -24,26 +24,46 @@ abstract class Kohana_Paginator
 	protected $_page = 1;
 
 	/**
+	 * Paginator view to use when rendering.
+	 *
+	 * @var string
+	 */
+	protected $_view = 'paginator/default';
+
+	/**
+	 * URL base for links.
+	 *
+	 * @var string
+	 */
+	protected $_url = '';
+
+	/**
 	 * Factory method for creating a Paginator.
 	 *
-	 * @param ORM $model Model to use.
+	 * @param ORM   $model Model to use.
+	 * @param mixed $url   URL to use as a base for links, defaulting to current.
 	 *
 	 * @return Paginator
 	 */
-	static public function factory(ORM $model)
+	static public function factory(ORM $model, $url = NULL)
 	{
-		return new Paginator($model);
+		return new Paginator($model, $url);
 	}
 
 	/**
 	 * Constructor.
 	 *
-	 * @param ORM $model Model to use.
+	 * @param ORM   $model Model to use.
+	 * @param mixed $url   URL to use as a base for links, defaulting to current.
 	 */
-	public function __construct(ORM $model)
+	public function __construct(ORM $model, $url = NULL)
 	{
 		$this->_model = $model;
 		$this->_per_page = (int) Kohana::$config->load('paginator.per-page', 25);
+		if ($url === NULL) {
+			$url = Request::current()->uri();
+		}
+		$this->_url = $url;
 	}
 
 	/**
@@ -64,6 +84,28 @@ abstract class Kohana_Paginator
 	public function getPage()
 	{
 		return $this->_page;
+	}
+
+	/**
+	 * Setter for the view name property.
+	 *
+	 * @param string $view View name.
+	 *
+	 * @return void
+	 */
+	public function setView($view)
+	{
+		$this->_view = $view;
+	}
+
+	/**
+	 * Getter for the view name property.
+	 *
+	 * @return string
+	 */
+	public function getView()
+	{
+		return $this->_view;
 	}
 
 	/**
@@ -91,19 +133,26 @@ abstract class Kohana_Paginator
 	}
 
 	/**
+	 * Generate a URL to the given page number.
+	 *
+	 * @param int $page Page number.
+	 *
+	 * @return string
+	 */
+	public function getPageURL($page)
+	{
+		return $this->_url . '?page=' . (int) $page;
+	}
+
+	/**
 	 * Render the Paginator into HTML.
 	 *
 	 * @return string
 	 */
 	public function render()
 	{
-		$pages = $this->getPageCount();
-
-		$html = '<div>' . PHP_EOL;
-		for ($page = 1; $page <= $pages; ++$page) {
-			$html .= "\t" . $page . ', ';
-		}
-		$html .= '</div>' . PHP_EOL;
-		return $html;
+		$view = View::factory($this->getView());
+		$view->paginator = $this;
+		return $view->render();
 	}
 }
