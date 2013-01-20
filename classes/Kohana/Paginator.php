@@ -10,6 +10,13 @@ abstract class Kohana_Paginator
 	protected $_model;
 
 	/**
+	 * Total number of items to paginate.
+	 *
+	 * @var int
+	 */
+	protected $_total_items = 0;
+
+	/**
 	 * Number of items per page.
 	 *
 	 * @var int
@@ -64,6 +71,7 @@ abstract class Kohana_Paginator
 			$url = Request::current()->uri();
 		}
 		$this->_url = $url;
+		$this->_total_items = $model->reset(FALSE)->count_all();
 	}
 
 	/**
@@ -115,7 +123,7 @@ abstract class Kohana_Paginator
 	 */
 	public function getPageCount()
 	{
-		return (int) ceil($this->_model->reset(FALSE)->count_all() / $this->_per_page);
+		return (int) ceil($this->_total_items / $this->_per_page);
 	}
 
 	/**
