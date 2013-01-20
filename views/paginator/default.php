@@ -8,8 +8,7 @@ for ($page = 1; $page <= $paginator->getPageCount(); ++$page):
 		$class .= ' paginator-current';
 	}
 
-	$attr = array('class' => $class);
-	echo "\t", HTML::anchor($paginator->getPageURL($page), $page, $attr), PHP_EOL;
+	echo "\t", HTML::anchor($paginator->getPageURL($page), $page, array('class' => $class)), PHP_EOL;
 endfor;
 ?>
 </div>
